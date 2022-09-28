@@ -1,22 +1,17 @@
-import asyncio
-import os
 import json
 import random
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram.utils import executor
+from aiogram import types
 
-from keyboards import keyboard, keyboard_without_buttons
-from env import set_env
+from bot_initializer import dp
+from coroutines import check_new_promo, check_if_user_already_in_db
 from emojis_unicode import EMOJIS
-from promo_parser import (get_response,
-                          parse_and_save_current_promos_from_response_to_file,
-                          handle_current_and_previous_check,
-                          ROOT_PATH)
+from keyboards import keyboard, keyboard_without_buttons
+from promo_parser import ROOT_PATH
+from logger.core import create_logger
 
-set_env()
-
-bot = Bot(token=os.environ.get("BOT_TOKEN_API"))
-dp = Dispatcher(bot, loop=asyncio.get_event_loop())
+logger = create_logger("bot_errors_logger")
 
 
 @dp.message_handler(commands=['help'])
@@ -48,7 +43,7 @@ async def return_promo_with_inline_button(call: types.CallbackQuery):
         with open(f"{ROOT_PATH}/promocodes/current_check", "r") as promo_file:
             promo_json = promo_file.read()
             promo_dict = json.loads(promo_json)
-            promos_to_return = '\n'.join([f"`{promo.upper()}` \n{items} \nlink: http://withhive\.me/313/{promo}\n"
+            promos_to_return = '\n'.join([f"`{promo.upper()}` \n{items} \nLINK: http://withhive\.me/313/{promo}\n"
                                           for promo, items in promo_dict.items()])
 
         await call.message.answer(promos_to_return,
@@ -59,39 +54,6 @@ async def return_promo_with_inline_button(call: types.CallbackQuery):
                                       "You can click on promo to copy it on clipboard! "
                                       f"{random.randint(2, 5) * EMOJIS.get('star')}",
                                  reply_markup=keyboard_without_buttons)
-
-
-async def check_new_promo():
-    while True:
-        response = get_response(os.getenv("COM2US_URL_WITH_PROMO"))
-        parse_and_save_current_promos_from_response_to_file(response).items()
-
-        await handle_current_and_previous_check(f"{ROOT_PATH}/promocodes/previous_check",
-                                                f"{ROOT_PATH}/promocodes/current_check",
-                                                bot,
-                                                int(os.getenv("CHAT_ID")))
-        await asyncio.sleep(600)
-
-
-async def check_if_user_already_in_db(user_id: int, username: str) -> None:
-    path_to_file_with_users_id = f"{ROOT_PATH}/subbed_users"
-
-    if not os.path.exists(path_to_file_with_users_id):
-        with open(path_to_file_with_users_id, "w") as users_id:
-            users_id.write('{}')
-
-    with open(path_to_file_with_users_id, "r") as file_with_users_id:
-        users = file_with_users_id.read()
-
-    json_to_dict = await json.loads(users)
-    if user_id not in json_to_dict.keys():
-        json_to_dict[str(user_id)] = str(username)
-    try:
-        with open(path_to_file_with_users_id, "r+") as file_with_users_id:
-            file_with_users_id.write(json.dumps(json_to_dict))
-    except Exception as exception:
-        print(">>> users", users)  # need logging here
-        print(">>> exception", exception)  # need logging here
 
 
 if __name__ == '__main__':
