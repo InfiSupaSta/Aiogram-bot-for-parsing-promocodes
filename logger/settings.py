@@ -15,10 +15,16 @@ config_settings = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard'
         },
-        'file': {
+        'errors_logfile': {
             '()': CustomFileHandler,
             'filename': 'bot_errors.log',
-            'level': 'DEBUG',
+            'level': 'ERROR',
+            'formatter': 'standard'
+        },
+        'new_users_logfile': {
+            '()': CustomFileHandler,
+            'filename': 'new_users.log',
+            'level': 'INFO',
             'formatter': 'standard'
         }
     },
@@ -26,7 +32,11 @@ config_settings = {
     'loggers': {
         'bot_errors_logger': {
             'level': 'ERROR',
-            'handlers': ['console', 'file']
+            'handlers': ['console', 'errors_logfile']
+        },
+        'new_user_logger': {
+            'level': 'INFO',
+            'handlers': ['console', 'new_users_logfile']
         }
     },
 }

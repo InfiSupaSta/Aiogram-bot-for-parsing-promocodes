@@ -4,22 +4,12 @@ from os.path import exists
 from os import mkdir
 
 import aiogram
-import requests
 
 from logger.core import create_logger
 
 logger = create_logger("bot_errors_logger")
 
 ROOT_PATH = pathlib.Path(__file__).parent
-
-
-def get_response(url: str) -> str:
-    try:
-        server_response = requests.get(url)
-        return server_response.text
-    except Exception as exception:
-        logger.error(f"Cant get response from server. Exception: {str(exception)}")
-        return ''
 
 
 def check_promocode_folder_exists() -> None:

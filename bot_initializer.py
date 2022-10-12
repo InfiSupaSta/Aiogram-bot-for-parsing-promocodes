@@ -7,5 +7,8 @@ from env import set_env
 
 set_env()
 
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 bot = Bot(token=os.environ.get("BOT_TOKEN_API"))
-dp = Dispatcher(bot, loop=asyncio.get_event_loop())
+dp = Dispatcher(bot, loop=loop)

@@ -41,10 +41,10 @@ async def wrong_command_reply_and_new_users_add(message: types.Message):
 async def return_promo_with_inline_button(call: types.CallbackQuery):
     if call.data and call.data == "promo":
         with open(f"{ROOT_PATH}/promocodes/current_check", "r") as promo_file:
-            promo_json = promo_file.read()
-            promo_dict = json.loads(promo_json)
-            promos_to_return = '\n'.join([f"`{promo.upper()}` \n{items} \nLINK: http://withhive\.me/313/{promo}\n"
-                                          for promo, items in promo_dict.items()])
+            promo_json: str = promo_file.read()
+            promo_dict: dict = json.loads(promo_json)
+            promos_to_return: str = '\n'.join([f"`{promo.upper()}` \n{items} \nLINK: http://withhive\.me/313/{promo}\n"
+                                               for promo, items in promo_dict.items()])
 
         await call.message.answer(promos_to_return,
                                   parse_mode=types.ParseMode.MARKDOWN_V2,

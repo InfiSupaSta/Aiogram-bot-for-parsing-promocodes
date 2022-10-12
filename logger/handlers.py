@@ -1,7 +1,8 @@
 import logging
 import os
+from pathlib import Path
 
-from promo_parser import ROOT_PATH
+ROOT_PATH = Path(__file__).parent.parent
 
 
 class CustomFileHandler(logging.Handler):
