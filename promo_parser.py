@@ -2,6 +2,7 @@ import json
 import pathlib
 from os.path import exists
 from os import mkdir
+from typing import Dict
 
 import aiogram
 
@@ -17,7 +18,7 @@ def check_promocode_folder_exists() -> None:
         mkdir(f"{ROOT_PATH}/promocodes")
 
 
-def parse_and_save_current_promos_from_response_to_file(response_text: str) -> dict[str, str]:
+def parse_and_save_current_promos_from_response_to_file(response_text: str) -> Dict[str, str]:
     response_from_json_to_dict = json.loads(response_text)
     active_coupons = dict()
 
